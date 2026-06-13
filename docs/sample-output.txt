@@ -1,0 +1,173 @@
+UrbanNexus — Sample Pipeline Outputs
+======================================
+Use this as a reference when implementing the Department, Clustering,
+and Resolution agents. Your output shape should match what is shown here.
+
+======================================
+OUTPUT 1 — Individual Complaint
+Topic: Missed waste collection
+Batch: 1
+======================================
+
+CITIZEN COMPLAINT (input):
+  "Bins on Central Park Avenue overflowing — not collected in 10 days.
+   Attracting birds and foxes."
+  Ward: Ward 5 | Location: Central Park Avenue, Ward 5
+
+--- After Intake Agent (built) ---
+{
+  "type": "sanitation",
+  "severity": "low",
+  "needs_emergency": false,
+  "keywords": ["bins", "overflow", "collection", "missed"],
+  "clean_description": "Recurring missed waste collection at Central Park Avenue causing overflow"
+}
+
+--- After Department Agent (YOUR TASK) ---
+{
+  "department": "Waste Management",
+  "crew_type": "Standard collection crew",
+  "equipment_needed": ["collection vehicle"],
+  "estimated_hours": 1,
+  "health_safety_risk": "low",
+  "sop_reference": "SOP-WASTE-002: Missed collection recovery",
+  "notes": "Schedule priority pickup within 24hrs. Check if route was skipped or vehicle breakdown."
+}
+
+--- After Resolution Agent (YOUR TASK) ---
+
+  Citizen Response Draft:
+  ------------------------
+  Dear resident, thank you for reporting the missed waste collection on
+  Central Park Avenue. We have logged your complaint and scheduled a
+  priority collection within 24 hours. We apologise for the inconvenience
+  caused. Reference: CMP-00423.
+
+  Work Order:
+  -----------
+  Deploy standard collection crew to Central Park Avenue, Ward 5.
+  Priority pickup — bins overflowing, 10 days missed.
+  Check route schedule for recurring issue. Complete by end of day.
+
+  Type:     individual (NOT escalated — no cluster detected)
+  Priority: routine
+
+
+======================================
+OUTPUT 2 — Clustered Case (THE KEY FEATURE)
+Topic: Ward 7 burst water main
+Batch: 2
+======================================
+
+5 CITIZEN COMPLAINTS (input — all separate, all about the same pipe):
+  1. "Water gushing at corner of Pine Street and 3rd Avenue"
+     Ward: Ward 7 | Type: water_leak | Severity: high
+
+  2. "Street flooding on 3rd Avenue, road surface collapsing"
+     Ward: Ward 7 | Type: water_leak | Severity: critical
+
+  3. "Large puddle at Pine Street junction, very low water pressure"
+     Ward: Ward 7 | Type: water_leak | Severity: high
+
+  4. "Basement flooding at 42 Pine Street, water through the floor"
+     Ward: Ward 7 | Type: flooding   | Severity: critical
+
+  5. "Pine Street road sinking, smells of sewage, no water in buildings"
+     Ward: Ward 7 | Type: water_leak | Severity: high
+
+--- After Intake Agent (built) ---
+  All 5 classified as: water_leak / flooding, Ward 7, severity: high/critical
+  needs_emergency: true (for critical ones)
+
+--- After Clustering Agent (YOUR TASK) ---
+  Algorithm detects: same ward + related types (water_leak + flooding)
+  + within time window + count (5) >= CLUSTER_THRESHOLD (3)
+
+  Case created:
+  {
+    "case_id": "case-ward7-water-001",
+    "ward": "Ward 7",
+    "type": "water_leak",
+    "complaint_count": 5,
+    "root_cause": "Suspected burst water main on Pine Street near 3rd Avenue junction",
+    "status": "escalated",
+    "complaints_collapsed": [
+      "complaint-001", "complaint-002", "complaint-003",
+      "complaint-004", "complaint-005"
+    ]
+  }
+
+  All 5 complaint records updated: case_id = "case-ward7-water-001", status = "escalated"
+
+--- After Department Agent (YOUR TASK) ---
+{
+  "department": "Water & Sewerage",
+  "crew_type": "Emergency excavation crew + pipe locator",
+  "equipment_needed": ["excavator", "pipe locator", "pump truck", "traffic management"],
+  "estimated_hours": 6,
+  "health_safety_risk": "critical",
+  "sop_reference": "SOP-WATER-003: Burst main response",
+  "notes": "Flow description and road sinking indicates 150mm+ main failure.
+            Isolate supply to Pine St before excavation. Coordinate traffic closure."
+}
+
+--- After Resolution Agent (YOUR TASK) ---
+
+  Citizen Response Draft (sent to ALL 5 residents, 1 message):
+  --------------------------------------------------------------
+  Dear resident, we have received multiple reports from your area and
+  identified a suspected burst water main on Pine Street. An emergency
+  crew has been dispatched with an estimated repair time of 6 hours.
+  Water supply to the affected area may be temporarily interrupted.
+  We apologise for the disruption.
+  Case Reference: CASE-WARD7-WATER-001.
+
+  Work Order (1 escalated order, NOT 5 individual orders):
+  ---------------------------------------------------------
+  EMERGENCY: Deploy excavation crew + pipe locator to Pine Street, Ward 7.
+  Suspected 150mm+ main burst at Pine St / 3rd Ave junction.
+  Road sinking confirmed. Steps:
+    (1) Isolate water supply to Pine St zone
+    (2) Locate exact break with pipe locator
+    (3) Excavate and repair
+    (4) Restore supply and test pressure
+    (5) Road reinstatement
+  Traffic management required. Estimated 6 hrs.
+
+  Type:     escalated (case-ward7-water-001)
+  Priority: emergency
+
+
+======================================
+THE DIFFERENCE — Why clustering matters
+======================================
+
+                   Without Clustering    With Clustering
+                   ------------------    ---------------
+  Work orders:           5                     1
+  Crews dispatched:      up to 5           1 emergency crew
+  Citizen responses:     5 different       1 consistent message
+  Root cause found:      NO                YES (burst main)
+  Resolution time:       hours per ticket  single coordinated fix
+
+This is the standout feature of UrbanNexus.
+Batch 2 is specifically designed to trigger this.
+Ingest Batch 1 first (no clusters), then Batch 2 (cluster fires).
+
+
+======================================
+SQLITE VERIFICATION COMMANDS
+======================================
+
+After ingesting Batch 2, verify your Clustering agent worked:
+
+  # Check cases were created
+  sqlite3 backend/data/civicswarm.db "SELECT id, ward, type, complaint_count, root_cause FROM cases"
+
+  # Check complaints were assigned to the case
+  sqlite3 backend/data/civicswarm.db "SELECT id, ward, type, status, case_id FROM complaints WHERE ward='Ward 7'"
+
+  # Check all findings
+  sqlite3 backend/data/civicswarm.db "SELECT capability, verdict, confidence, summary FROM findings ORDER BY created_at DESC LIMIT 10"
+
+Expected: Ward 7 water_leak + flooding complaints all have the same case_id and status='escalated'
