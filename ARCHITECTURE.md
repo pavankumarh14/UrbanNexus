@@ -1,4 +1,4 @@
-# CivicSwarm — Architecture Document
+# UrbanNexus — Architecture Document
 
 > Audience: 3+ year engineers onboarding to this codebase.
 
@@ -82,7 +82,7 @@ Citizen complaints arrive (mock batches or custom POST)
 ## 3. Directory Layout
 
 ```
-CivicSwarm/
+UrbanNexus/
 ├── backend/
 │   ├── src/
 │   │   ├── server.js                    ← Express + WebSocket entry point
@@ -106,7 +106,7 @@ CivicSwarm/
 │   │       └── resolution/
 │   │           └── index.js             ← ⬜ CANDIDATE TASK
 │   ├── data/
-│   │   └── civicswarm.db                ← SQLite (auto-created at first run)
+│   │   └── urbannexus.db                ← SQLite (auto-created at first run)
 │   ├── .env                             ← GROQ_API_KEY (gitignored, each team uses own key)
 │   ├── .env.example
 │   └── package.json
@@ -137,7 +137,7 @@ CivicSwarm/
 ## 4. Data Model (SQLite)
 
 **Why SQLite:**
-CivicSwarm is event-driven (not continuous like a scheduler), but the Clustering agent needs to query the full complaint history across all batches to find root-cause patterns. SQLite provides WAL-mode concurrent writes during the parallel Phase 1 (intake + clustering both write findings simultaneously) and a proper query layer for cross-batch lookups. JSON files cannot do either safely.
+UrbanNexus is event-driven (not continuous like a scheduler), but the Clustering agent needs to query the full complaint history across all batches to find root-cause patterns. SQLite provides WAL-mode concurrent writes during the parallel Phase 1 (intake + clustering both write findings simultaneously) and a proper query layer for cross-batch lookups. JSON files cannot do either safely.
 
 ### Schema
 
@@ -294,7 +294,7 @@ Read `agents/intake/index.js` before implementing any candidate agent.
 
 ## 8. Clustering Agent — Why No LLM
 
-The clustering agent is the algorithmic heart of CivicSwarm and it deliberately uses no LLM. This tests the **System Architecture** dimension, not AI Integration.
+The clustering agent is the algorithmic heart of UrbanNexus and it deliberately uses no LLM. This tests the **System Architecture** dimension, not AI Integration.
 
 The algorithm must be deterministic: same input → same output every time. LLM calls are non-deterministic and slow. A spatial + temporal grouping algorithm is the right tool:
 

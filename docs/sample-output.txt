@@ -162,12 +162,12 @@ SQLITE VERIFICATION COMMANDS
 After ingesting Batch 2, verify your Clustering agent worked:
 
   # Check cases were created
-  sqlite3 backend/data/civicswarm.db "SELECT id, ward, type, complaint_count, root_cause FROM cases"
+  sqlite3 backend/data/urbannexus.db "SELECT id, ward, type, complaint_count, root_cause FROM cases"
 
   # Check complaints were assigned to the case
-  sqlite3 backend/data/civicswarm.db "SELECT id, ward, type, status, case_id FROM complaints WHERE ward='Ward 7'"
+  sqlite3 backend/data/urbannexus.db "SELECT id, ward, type, status, case_id FROM complaints WHERE ward='Ward 7'"
 
   # Check all findings
-  sqlite3 backend/data/civicswarm.db "SELECT capability, verdict, confidence, summary FROM findings ORDER BY created_at DESC LIMIT 10"
+  sqlite3 backend/data/urbannexus.db "SELECT capability, verdict, confidence, summary FROM findings ORDER BY created_at DESC LIMIT 10"
 
 Expected: Ward 7 water_leak + flooding complaints all have the same case_id and status='escalated'

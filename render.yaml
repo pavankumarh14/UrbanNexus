@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: urbannexus
+    env: node
+    plan: starter
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: FRONTEND_ORIGIN
+        fromService:
+          type: web
+          name: urbannexus
+          property: host
+      - key: GROQ_API_KEY
+        sync: false
+    disk:
+      name: urbannexus-data
+      mountPath: /opt/render/project/backend/data
+      sizeGB: 1

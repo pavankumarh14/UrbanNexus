@@ -5,6 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const http    = require('http');
+const path    = require('path');
 const { WebSocketServer } = require('ws');
 const { v4: uuidv4 }      = require('uuid');
 
@@ -95,6 +96,15 @@ app.get('/api/dags/:id',          (req, res) => {
   return d ? ok(res, d) : err(res, 'DAG not found', 404);
 });
 app.get('/api/dags/:id/findings', (req, res) => ok(res, getFindingsByDagId(req.params.id)));
+
+// Serve frontend static files
+const frontendBuildPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendBuildPath));
+
+// SPA fallback: send index.html for any non-API routes
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(frontendBuildPath, 'index.html'));
+});
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 

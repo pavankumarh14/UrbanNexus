@@ -134,7 +134,7 @@ cd frontend && npm run dev
 ### 5. Reset
 
 ```bash
-rm backend/data/civicswarm.db
+rm backend/data/urbannexus.db
 # DB auto-recreates on next backend start
 ```
 
@@ -181,7 +181,7 @@ Connect to `ws://localhost:3001/ws`
 3. Read `backend/src/agents/intake/index.js` completely — the reference implementation
 4. Inspect what lands in the DB:
 ```bash
-sqlite3 backend/data/civicswarm.db "SELECT capability, verdict, confidence, summary FROM findings ORDER BY created_at DESC LIMIT 10"
+sqlite3 backend/data/urbannexus.db "SELECT capability, verdict, confidence, summary FROM findings ORDER BY created_at DESC LIMIT 10"
 ```
 
 ### Department agent (`backend/src/agents/department/index.js`)

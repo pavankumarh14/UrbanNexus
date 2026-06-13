@@ -1,6 +1,6 @@
 
 
-CivicSwarm
+UrbanNexus
 50 complaints about the same burst pipe → 1 escalated case, 1 field crew
 Theme: Theme 05 — Agent Swarms  ·  Function: AI-Powered Public Services
 Suggested stack: Node.js 22 · Groq (Llama 3.1) · SQLite · React 18 + React Flow · WebSocket
@@ -124,7 +124,7 @@ service. The highest-value insight — many complaints are one systemic problem 
 surfaced automatically every time, regardless of how many tickets come in. Officers spend
 time approving well-researched responses, not triaging noise.
 ## Potential Impact
-For a mid-sized city receiving 500 complaints per day, CivicSwarm reduces duplicate work
+For a mid-sized city receiving 500 complaints per day, UrbanNexus reduces duplicate work
 orders by detecting root causes that span multiple tickets. At scale, the compounding effect
 is significant: faster resolution, fewer repeat complaints for the same underlying issue, and
 an officer team that spends its time on decisions rather than classification and routing.

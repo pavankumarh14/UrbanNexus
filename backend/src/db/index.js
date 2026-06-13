@@ -3,7 +3,7 @@
 const Database = require('better-sqlite3');
 const path     = require('path');
 
-const DB_PATH = path.join(__dirname, '../../data/civicswarm.db');
+const DB_PATH = path.join(__dirname, '../../data/urbannexus.db');
 
 let db;
 
