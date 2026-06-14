@@ -40,9 +40,9 @@ function CustomNode({ data }) {
         border: '2px solid rgba(255,255,255,0.2)',
       }}
     >
-      <div style={{ fontWeight: 'bold', marginBottom: '4px' }>{data.label}</div>
+      <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{data.label}</div>
       {data.confidence !== null && (
-        <div style={{ fontSize: '12px', opacity: 0.9 }>
+        <div style={{ fontSize: '12px', opacity: 0.9 }}>
           Confidence: {Math.round(data.confidence * 100)}%
         </div>
       )}
