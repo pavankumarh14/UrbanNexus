@@ -11,7 +11,7 @@ const { v4: uuidv4 }      = require('uuid');
 
 const {
   getDb, getBatches,
-  getComplaintsByBatch, getAllOpenComplaints,
+  getComplaintsByBatch, getAllOpenComplaints, getAllComplaints,
   getCases, getCaseById,
   getDAGByBatchId, getDAGById, getFindingsByDagId,
 } = require('./db');
@@ -73,7 +73,7 @@ app.post('/api/ingest/mock/:batch', async (req, res) => {
 });
 
 // Complaints
-app.get('/api/complaints',            (_req, res) => ok(res, getAllOpenComplaints()));
+app.get('/api/complaints',            (_req, res) => ok(res, getAllComplaints()));
 app.get('/api/complaints/batch/:id',  (req, res)  => ok(res, getComplaintsByBatch(req.params.id)));
 
 // Cases

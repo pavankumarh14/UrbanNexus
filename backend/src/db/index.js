@@ -144,6 +144,10 @@ function getAllOpenComplaints() {
   return getDb().prepare("SELECT * FROM complaints WHERE status IN ('open', 'in_progress', 'escalated') ORDER BY created_at ASC").all();
 }
 
+function getAllComplaints() {
+  return getDb().prepare("SELECT * FROM complaints ORDER BY created_at ASC").all();
+}
+
 function getComplaintById(id) {
   return getDb().prepare('SELECT * FROM complaints WHERE id = ?').get(id);
 }
@@ -215,7 +219,7 @@ module.exports = {
   getDb,
   saveBatch, updateBatchStatus, getBatches,
   saveComplaint, saveComplaints, assignComplaintToCase, updateComplaintStatus,
-  getComplaintsByBatch, getAllOpenComplaints, getComplaintById,
+  getComplaintsByBatch, getAllOpenComplaints, getAllComplaints, getComplaintById,
   saveCase, updateCase, getCases, getCaseById,
   saveDAG, getDAGByBatchId, getDAGById,
   saveFinding, getFindingsByDagId,
