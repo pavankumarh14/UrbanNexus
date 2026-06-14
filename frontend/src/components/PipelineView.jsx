@@ -36,6 +36,18 @@ function statusColor(status) {
 function CustomNode({ data }) {
   const [isHovered, setIsHovered] = React.useState(false);
 
+  const getTooltipPosition = () => {
+    if (data.label.includes('Resolution')) {
+      return { bottom: '100%', top: 'auto', marginTop: 0, marginBottom: '8px' };
+    }
+    if (data.label.includes('Clustering')) {
+      return { left: 'auto', right: '100%', top: '50%', transform: 'translateY(-50%)', marginTop: 0, marginRight: '8px' };
+    }
+    return { top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: '8px' };
+  };
+
+  const tooltipPosition = getTooltipPosition();
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -52,6 +64,7 @@ function CustomNode({ data }) {
         transition: 'transform 0.2s, box-shadow 0.2s',
         transform: isHovered ? 'scale(1.05)' : 'scale(1)',
         cursor: 'pointer',
+        position: 'relative',
       }}
     >
       <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{data.label}</div>
@@ -66,18 +79,16 @@ function CustomNode({ data }) {
       {isHovered && (
         <div style={{
           position: 'absolute',
-          top: '100%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          marginTop: '8px',
+          ...tooltipPosition,
           padding: '8px 12px',
           background: '#111827',
           borderRadius: '6px',
           fontSize: '11px',
-          maxWidth: '200px',
-          zIndex: 1000,
+          maxWidth: '220px',
+          zIndex: 9999,
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           border: '1px solid #374151',
+          textAlign: 'left',
         }}>
           {data.description}
         </div>

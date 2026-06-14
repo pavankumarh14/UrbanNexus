@@ -89,6 +89,12 @@ export default function App() {
       </header>
 
       <div className="app-body">
+        {/* Left Panel: Ingest */}
+        <aside className="left-sidebar">
+          <ComplaintIngest onBatchStarted={handleBatchStarted} />
+        </aside>
+
+        {/* Main Panel */}
         <main className="main-panel">
           {batches.length > 0 && (
             <div className="batch-selector" style={{ marginBottom: '16px', padding: '12px', background: '#1e293b', borderRadius: '8px' }}>
@@ -133,10 +139,10 @@ export default function App() {
           {view === 'clusters'   && <ClusterMap     complaints={complaints} cases={cases} />}
           {view === 'resolution' && <ResolutionPanel activeCase={activeCase} complaints={complaints} />}
         </main>
-        <aside className="sidebar">
-          <ComplaintIngest onBatchStarted={handleBatchStarted} />
-          <div className="sidebar-divider" />
-          <div className="sidebar-section-header">Cases &amp; Complaints</div>
+
+        {/* Right Panel: Cases & Complaints */}
+        <aside className="right-sidebar">
+          <div className="sidebar-section-header">Cases & Complaints</div>
           <CaseList
             cases={cases}
             complaints={complaints}
