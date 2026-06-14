@@ -56,7 +56,7 @@ export function CaseList({ cases, complaints, onSelectCase, activeCase }) {
 
       {/* Individual open complaints */}
       {grouped.individual.map(c => {
-        const meta = TYPE_META[c.type] ?? TYPE_META.other;
+        const meta = TYPE_META[c.type] || TYPE_META.other;
         return (
           <div
             key={c.id}
@@ -66,8 +66,8 @@ export function CaseList({ cases, complaints, onSelectCase, activeCase }) {
             <div className="case-header">
               <span className="type-icon">{meta.icon}</span>
               <span className="case-ward">{c.ward}</span>
-              <span className="severity-badge sev-${c.severity}">{c.severity}</span>
-              <span className="status-badge" style={{ color: STATUS_COLOR[c.status] ?? '#6b7280' }}>
+              <span className={`severity-badge`} style={{ background: c.severity === 'critical' || c.severity === 'high' ? '#dc2626' : c.severity === 'medium' ? '#ca8a04' : '#16a34a', color: '#fff' }}>{c.severity}</span>
+              <span className="status-badge" style={{ color: STATUS_COLOR[c.status] || '#94a3b8' }}>
                 ● {c.status}
               </span>
             </div>
