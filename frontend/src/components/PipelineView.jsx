@@ -16,6 +16,13 @@ const NODE_LABELS = {
   resolution: '📋 Resolution',
 };
 
+const NODE_DESCRIPTIONS = {
+  intake: 'Classifies complaints and extracts key information like type, severity, and urgency.',
+  clustering: 'Groups similar complaints by location and type to identify root causes.',
+  department: 'Adds domain-specific information based on complaint type (water, roads, lighting, etc.).',
+  resolution: 'Generates draft citizen responses and work orders for cases.',
+};
+
 function statusColor(status) {
   switch (status) {
     case 'pending': return '#374151';
@@ -27,17 +34,24 @@ function statusColor(status) {
 }
 
 function CustomNode({ data }) {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
     <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{
         padding: '12px 16px',
         borderRadius: '8px',
         background: data.color,
         color: 'white',
         textAlign: 'center',
-        minWidth: '140px',
+        minWidth: '160px',
         boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
         border: '2px solid rgba(255,255,255,0.2)',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+        cursor: 'pointer',
       }}
     >
       <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{data.label}</div>
@@ -49,6 +63,25 @@ function CustomNode({ data }) {
       <div style={{ fontSize: '11px', marginTop: '4px', opacity: 0.8 }}>
         Status: {data.status}
       </div>
+      {isHovered && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          marginTop: '8px',
+          padding: '8px 12px',
+          background: '#111827',
+          borderRadius: '6px',
+          fontSize: '11px',
+          maxWidth: '200px',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          border: '1px solid #374151',
+        }}>
+          {data.description}
+        </div>
+      )}
     </div>
   );
 }
@@ -77,6 +110,7 @@ export function PipelineView({ dag }) {
         status: node.status,
         color: statusColor(node.status),
         confidence: node.confidence,
+        description: NODE_DESCRIPTIONS[node.id],
       },
     }));
 

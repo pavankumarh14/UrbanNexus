@@ -33,7 +33,7 @@ body { background: var(--bg); color: var(--text-primary); font-family: 'Inter', 
 /* ── Sidebar ── */
 .sidebar {
   width: 300px; flex-shrink: 0;
-  background: var(--bg-card); border-right: 1px solid var(--border);
+  background: var(--bg-card); border-left: 1px solid var(--border);
   display: flex; flex-direction: column;
   overflow: hidden;
   min-height: 0;

@@ -25,6 +25,9 @@ export default function App() {
         setCases(casesData);
         setComplaints(complaintsData);
         setBatches(sortedBatches);
+        if (casesData.length > 0) {
+          setActiveCase(casesData[0]);
+        }
         if (sortedBatches.length > 0) {
           try {
             const latestBatch = sortedBatches[sortedBatches.length - 1];
@@ -51,6 +54,9 @@ export default function App() {
         setCases(c);
         setComplaints(comp);
         setBatches(sortedBatches);
+        if (c.length > 0) {
+          setActiveCase(c[0]);
+        }
       }).catch(console.error);
     }
   }, [lastMessage]);
@@ -83,18 +89,6 @@ export default function App() {
       </header>
 
       <div className="app-body">
-        <aside className="sidebar">
-          <ComplaintIngest onBatchStarted={handleBatchStarted} />
-          <div className="sidebar-divider" />
-          <div className="sidebar-section-header">Cases &amp; Complaints</div>
-          <CaseList
-            cases={cases}
-            complaints={complaints}
-            onSelectCase={setActiveCase}
-            activeCase={activeCase}
-          />
-        </aside>
-
         <main className="main-panel">
           {batches.length > 0 && (
             <div className="batch-selector" style={{ marginBottom: '16px', padding: '12px', background: '#1e293b', borderRadius: '8px' }}>
@@ -139,6 +133,17 @@ export default function App() {
           {view === 'clusters'   && <ClusterMap     complaints={complaints} cases={cases} />}
           {view === 'resolution' && <ResolutionPanel activeCase={activeCase} complaints={complaints} />}
         </main>
+        <aside className="sidebar">
+          <ComplaintIngest onBatchStarted={handleBatchStarted} />
+          <div className="sidebar-divider" />
+          <div className="sidebar-section-header">Cases &amp; Complaints</div>
+          <CaseList
+            cases={cases}
+            complaints={complaints}
+            onSelectCase={setActiveCase}
+            activeCase={activeCase}
+          />
+        </aside>
       </div>
     </div>
   );
