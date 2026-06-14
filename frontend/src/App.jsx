@@ -21,12 +21,13 @@ export default function App() {
   useEffect(() => {
     Promise.all([getCases(), getComplaints(), getBatches()])
       .then(async ([casesData, complaintsData, batchesData]) => {
+        const sortedBatches = batchesData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         setCases(casesData);
         setComplaints(complaintsData);
-        setBatches(batchesData);
-        if (batchesData.length > 0) {
+        setBatches(sortedBatches);
+        if (sortedBatches.length > 0) {
           try {
-            const latestBatch = batchesData[0];
+            const latestBatch = sortedBatches[sortedBatches.length - 1];
             const dag = await getBatchDAG(latestBatch.id);
             setActiveDAG(dag);
           } catch (e) {
@@ -45,9 +46,12 @@ export default function App() {
     if (type === 'dag_update') setActiveDAG(data);
 
     if (type === 'batch_complete') {
-      getCases().then(setCases).catch(console.error);
-      getComplaints().then(setComplaints).catch(console.error);
-      getBatches().then(setBatches).catch(console.error);
+      Promise.all([getCases(), getComplaints(), getBatches()]).then(([c, comp, b]) => {
+        const sortedBatches = b.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        setCases(c);
+        setComplaints(comp);
+        setBatches(sortedBatches);
+      }).catch(console.error);
     }
   }, [lastMessage]);
 
@@ -107,9 +111,9 @@ export default function App() {
                   fontSize: '12px'
                 }}
               >
-                {batches.map(batch => (
+                {batches.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).map((batch, index) => (
                   <option key={batch.id} value={batch.id}>
-                    {batch.id} ({batch.status})
+                    Batch {index + 1} ({batch.status})
                   </option>
                 ))}
               </select>
